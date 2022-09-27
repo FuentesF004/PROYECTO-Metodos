@@ -1,0 +1,691 @@
+#include<iostream>
+#include<stdio.h>
+#include<conio.h>
+#include<clocale>
+#include<stdlib.h>
+#include<math.h>
+#include<cmath>
+#include<iomanip>
+
+using namespace std;
+
+void portadaGeneral()
+{
+	cout<<"\n----------Métodos Númericos----------\n";
+	cout<<"\nPrograma Para Calcular La Raiz De Una Funcion Mediante Dos Metodos Diferentes";
+	cout<<"\nIntegrantes Del Equipo:";
+	cout<<"\n 1.-Bermeo Barrón Abril Itzel \n 2.-Durán Zamarripa Brenda Elizabeth \n 3.-Fuentes Flores Mauricio \n 4.-Gutierrez Segura Jhonatan Lemuel\n\n";
+	system("pause"); 
+}
+
+void portadaEcuacion()
+{
+	cout<<"\n----------Solución de una ecuaciones----------\n";
+	cout<<"\n Por Favor Seleccione El Metodo Para La Ecucacion A Resolver";
+	system("pause"); 
+}
+
+int menuMetodo(){
+	int op;
+	
+	cout<<"	----Menú De Métodos----\n";
+	
+	cout<<"\n 1.- Método De Bisección.";
+	cout<<"\n 2.- Método De Newton.";
+	
+	cout<<"\n\n Elija Un Método (1/2): ";
+	cin>>op;
+	
+	while(op!=1 && op!=2){
+		cout<<" VALOR INVALIDO\n\n Ingrese Unicamente 1 o 2: ";
+		cin>>op;
+	}
+	return op;
+}
+
+int menuFuncion(){
+	int op;
+	cout<<"\n	----Menú De Funciones----\n";
+	cout<<"\n 1.- f(x) = x^2 cosx - 2x";
+	cout<<"\n 2.- f(x) = 6-2/x^2 e^2+x/4 + 1";
+	cout<<"\n 3.- f(x) = x^3 - 3senx^2  + 1";
+	cout<<"\n 4.- f(x) = x^3 + 6x^2 + 9.4x + 2.5";
+	cout<<"\n\n Elija una función (1/4): ";
+	cin>>op;
+	while(op!=1 && op!=2 && op!=3 && op!=4){
+		cout<<" VALOR INVALIDO\n\n Ingrese Unicamente 1, 2, 3 o 4: ";
+		cin>>op;
+	}
+	return op;
+}
+
+double f(double x, int op)
+{
+	switch(op)
+	{
+		case 1:
+			return pow(x, 2) * cos(x) - 2*x;
+			break;
+		case 2:
+			return ((6-(2/pow(x, 2)))*(exp(2+x)/4))+1;
+			break;
+		case 3:
+			return pow(x, 3) - 3*sin(pow(x, 2)) + 1;
+			break;
+		case 4:
+			return pow(x, 3) + 6*pow(x, 2) + 9.4*x + 2.5;
+			break;
+	}
+}
+
+double df(double x, int op)
+{
+	switch(op)
+	{
+		case 1:
+			return 2*x*cos(x)-(pow(x,2)*sin(x))-2;
+			break;
+		case 2:
+			return (pow(exp(1),x+2)*(3*(pow(x,3))-x+2))/(2*pow(x, 3));
+			break;
+		case 3:
+			return 3*pow(x,2)-6*x*(cos(pow(x,2)));
+			break;
+		case 4:
+			return 3*(pow(x,2))+12*x+9.4;
+			break;
+	}
+}
+
+void metodoNewton(int op, double x0, int maxIt, int tolE, double tol, int iteracion){
+	double xa=0, fx0=0, derivfx0=0, x2, ea=0, er=0, erp=0;
+	int i=0;
+	bool encontrada=false;
+	
+	cout<<" Método: Newton \t\t";         
+	switch(op){
+		case 1:
+			cout<<"Función: f(x) = x^2 cosx - 2x\n";
+			cout<<"\n x0: "<<x0<<"\t\tTolerancia: "<<fixed<<setprecision(10)<<tol<<"\tMáximo de iteraciones: "<<maxIt<<endl<<endl;
+			cout<<" i |x_0 \t\t|f(x_0) \t|f'(x_0) \t|Ea \t\t|Er \t\t|Erp\n";
+			for(i=0; i<=maxIt; i++){
+				fx0 = f(x0, op);//5
+				derivfx0 = df(x0, op);//0
+				x2 = x0 - (fx0/derivfx0);//-inf
+				if(i>0){
+					ea = fabs(x0-xa);
+					er = ea/(fabs(x0));
+					erp = er*100.00;
+					iteracion=i;
+					if(tolE==1 && i>0){
+						if(ea<=tol){
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else if(tolE==2){
+						if(er<=tol){
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else{
+						if(erp<=tol){
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+				}
+				if(i==0){
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t| \t\t| \t\t|\n", i, x0, fx0, derivfx0);					
+				}
+				else if(i>0 && derivfx0!=0){
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \n", iteracion, x0, fx0, derivfx0, ea, er, erp);
+				}
+				else if(derivfx0==0){
+					i=maxIt;
+				}		
+				xa = x0;
+				x0 = x2;
+			}
+		break;
+		
+		case 2:
+			cout<<"Función: f(x) = (6 - 2/x^2) (e^(2+x))/4  + 1\n";
+			cout<<"\n x0: "<<x0<<"\t\tTolerancia: "<<fixed<<setprecision(10)<<tol<<"\tMáximo de iteraciones: "<<maxIt<<endl<<endl;
+			cout<<" i |x_0 \t\t|f(x_0) \t|f'(x_0) \t|Ea \t\t|Er \t\t|Erp\n";
+			for(i=0; i<=maxIt; i++)
+			{
+				fx0 = f(x0, op);
+				derivfx0 = df(x0, op);
+				x2 = x0 - (fx0/derivfx0);
+				if(i>0){
+					ea = fabs(x0-xa);
+					er = ea/(fabs(x0));
+					erp = er*100.00;
+					iteracion=i;
+					if(tolE==1 && i>0)
+					{
+						if(ea<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else if(tolE==2)
+					{
+						if(er<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else
+					{
+						if(erp<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+				}
+				if(i==0)
+				{
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t| \t\t| \t\t|\n", i, x0, fx0, derivfx0);					
+				}
+				else if(i>0 && derivfx0!=0)
+				{
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf\n", iteracion, x0, fx0, derivfx0, ea, er, erp);
+				}
+				else
+				{
+					i=maxIt;
+				}
+				xa = x0;
+				x0 = x2;
+			}
+		break;
+		
+		case 3:
+			cout<<"Función: f(x) = x^3 - 3senx^2  + 1\n";
+			cout<<"\n x0: "<<x0<<"\t\tTolerancia: "<<fixed<<setprecision(10)<<tol<<"\tMáximo de iteraciones: "<<maxIt<<endl<<endl;
+			cout<<" i |x_0 \t\t|f(x_0) \t|f'(x_0) \t|Ea \t\t|Er \t\t|Erp\n";
+			for(i=0; i<=maxIt; i++)
+			{
+				fx0 = f(x0, op);
+				derivfx0 = df(x0, op);
+				x2 = x0 - (fx0/derivfx0);
+				if(i>0)
+				{
+					ea = fabs(x0-xa);
+					er = ea/(fabs(x0));
+					erp = er*100.00;
+					iteracion=i;
+					if(tolE==1 && i>0)
+					{
+						if(ea<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else if(tolE==2)
+					{
+						if(er<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else
+					{
+						if(erp<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+				}
+				if(i==0)
+				{
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t| \t\t| \t\t|\n", i, x0, fx0, derivfx0);					
+				}
+				else if(i>0 && derivfx0!=0)
+				{
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf\n", iteracion, x0, fx0, derivfx0, ea, er, erp);
+				}
+				else
+				{
+					i=maxIt;
+				}
+				xa = x0;
+				x0 = x2;
+			}
+		break;
+		
+		case 4:
+			cout<<"Función: f(x) = x^3 + 6x^2 + 9.4x + 2.5\n";
+			cout<<"\n x0: "<<x0<<"\t\tTolerancia: "<<fixed<<setprecision(10)<<tol<<"\tMáximo de iteraciones: "<<maxIt<<endl<<endl;
+			cout<<" i |x_0 \t\t|f(x_0) \t|f'(x_0) \t|Ea \t\t|Er \t\t|Erp\n";
+			for(i=0; i<=maxIt; i++)
+			{
+				fx0 = f(x0, op);
+				derivfx0 = df(x0, op);
+				x2 = x0 - (fx0/derivfx0);
+				if(i>0){
+					ea = fabs(x0-xa);
+					er = ea/(fabs(x0));
+					erp = er*100.00;
+					iteracion=i;
+					if(tolE==1 && i>0){
+						if(ea<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else if(tolE==2)
+					{
+						if(er<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else
+					{
+						if(erp<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+				}
+				if(i==0){
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t| \t\t| \t\t|\n", i, x0, fx0, derivfx0);					
+				}
+				else if(i>0 && derivfx0!=0){
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \n", iteracion, x0, fx0, derivfx0, ea, er, erp);
+				}
+				else
+				{
+					i=maxIt;
+				}
+				xa = x0;
+				x0 = x2;
+			}
+		break;	
+	}
+	if(encontrada==true)
+	{
+		cout<<"\n La raíz obtenida es "<<x2<<", en la iteración "<<iteracion<<", con una toleracia de ";		
+		if(tolE==1)
+		{
+			cout<<fixed<<setprecision(10)<<ea<<" <= "<<tol<<" en el error absoluto.\n";
+		}
+		else if(tolE==2)
+		{
+			cout<<fixed<<setprecision(10)<<er<<" <= "<<tol<<" en el error relativo.\n";
+		}
+		else
+		{
+			cout<<fixed<<setprecision(10)<<erp<<" <= "<<tol<<" en el error relativo porcentual.\n";
+		}
+	}
+	else if(iteracion==maxIt && encontrada==false)
+	{
+		cout<<"\n Después de "<<maxIt<<" iteraciones como máximo, la raíz con tolerancia de "<<tol;
+		if(tolE==1)
+		{
+			cout<<" en el error absoluto, no ha sido encontrada con el valor ingresado.\n";
+		}
+		else if(tolE==2)
+		{
+			cout<<" en el error relativo, no ha sido encontrada con el valor ingresado.\n";
+		}
+		else
+		{
+			cout<<" en el error relarivo porcentual, no ha sido encontrada con el valor ingresado.\n";
+		}
+	}
+	else if(derivfx0==0)
+	{
+		cout<<"\n Después de "<<iteracion<<" iteraciones, la derivada de f(x_0) se indetermina y no se puede hallar la raíz con este valor inicial.";
+	}
+}	
+				//Funcion - Valor 1  - Valor 2  - N. Itera - T. Tole - Tolerancia - Aux. de N. de Itera.
+void posicionFalsa(int op, double x0, double x1, int maxIt, int tolE, double tol, int iteracion){
+	double x2=0, xa=0, fx0=0, fx1=0, fx2=0, ea=0, er=0, erp=0;
+	int i=0;
+	bool encontrada=false;
+	cout<<" Método: Bisección \t";
+	switch(op){
+		case 1:
+			cout<<"Función: f(x) = x^2 cosx - 2x\n";
+			cout<<"\n x0: "<<x0<<"\t\tx1: "<<x1<<"\t\tTolerancia: "<<fixed<<setprecision(10)<<tol<<"\tMáximo de iteraciones: "<<maxIt<<endl<<endl;
+			  //Itera |C. V1   |C. V2   |Ev. de V1|Ev. de V2|	V3	 |Ev. de V3|Error a|Error r|Error rp|
+			cout<<" i |x_0 \t\t|x_1 \t\t|f(x_0) \t|f(x_1) \t|x_2 \t\t|f(x_2) \t|Ea \t\t|Er \t\t|Erp\n";
+			for(i=0; i<=maxIt; i++){
+				fx0 = (pow(x0, 2)*cos(x0)) - (2*x0);
+				fx1 = (pow(x1, 2)*cos(x1)) - (2*x1);
+				x2 = (x0+x1)/2;
+				fx2 = (pow(x2, 2)*cos(x2)) - (2*x2);
+				if(i>0){
+					ea = fabs(x2-xa);		//ERROR ABSOLUTO
+					er = ea/(fabs(x2));		//ERROR RELATIVO
+					erp = er*100.00;		//ERROR RELATIVO PORCENTUAL
+					iteracion=i;
+					if(tolE==1 && i>0){//Si La Tolerancia Es Por Error Absoluto
+						if(ea<=tol){
+							i=maxIt;
+							encontrada=true;//Indica que la raiz se encontrÃ³. Nos sirve mÃ¡s adelante
+						}
+					}
+					else if(tolE==2){//Si La Tolerancia Es Por Error Relativo
+						if(er<=tol){
+							i=maxIt;
+							encontrada=true;//Indica que la raiz se encontrÃ³. Nos sirve mÃ¡s adelante
+						}
+					}
+					else{
+						if(erp<=tol){//Si La Tolerancia Es Por Error Porcentual
+							i=maxIt;
+							encontrada=true;//Indica que la raiz se encontrÃ³. Nos sirve mÃ¡s adelante
+						}
+					}
+				}
+				if(i==0){		//Primera Columna Sin Mostrar Los Errores Que Necesitan Dos Valores
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t| \t\t| \t\t|\n", i, x0, x1, fx0, fx1, x2, fx2);					
+				}
+				else{			//DemÃ¡s Columnas Con Los Errores Respectivos 
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf\n", iteracion, x0, x1, fx0, fx1, x2, fx2, ea, er, erp);
+				}
+				xa = x2;
+				if(fx2>=0){
+					x1 = x2;
+				}
+				else{
+					x0 = x2;
+				}
+			}
+		break; 
+		
+		case 2:
+			cout<<"Función: f(x) = (6 - 2/x^2) (e^(2+x))/4 + 1\n\n";
+			cout<<"\n x0: "<<x0<<"\t\tx1: "<<x1<<"\t\tTolerancia: "<<fixed<<setprecision(10)<<tol<<"\tMáximo de iteraciones: "<<maxIt<<endl<<endl; //se muestran valores ingresados
+			cout<<" i |x_0 \t\t|x_1 \t\t|f(x_0) \t|f(x_1) \t|x_2 \t\t|f(x_2) \t|Ea \t\t|Er \t\t|Erp\n";
+			for(i=0; i<=maxIt; i++)
+			{
+				double auxf1, auxf2;
+				fx0 = (6-(2/pow(x0, 2)))*(exp(x0+2)/4)+1;
+				auxf1=6-(2/pow(x1, 2));
+				auxf2=(exp(x1+2)/4)+1;
+				fx1 = auxf1*auxf2;
+				x2 = (x0+x1)/2;
+				fx2 = (6-(2/pow(x2, 2)))*(exp(x2+2)/4)+1;
+				if(i>0){
+					ea = fabs(x2-xa);
+					er = ea/(fabs(x2));
+					erp = er*100;
+					iteracion=i;
+					if(tolE==1 && i>0){
+						if(ea<=tol){
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else if(tolE==2)
+					{
+						if(er<=tol){
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else{
+						if(erp<=tol){
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+				}
+				if(i==0){
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t| \t\t| \t\t|\n", i, x0, x1, fx0, fx1, x2, fx2);					
+				}
+				else{
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf\n", iteracion, x0, x1, fx0, fx1, x2, fx2, ea, er, erp);
+				}
+				xa = x2; 	
+				if(fx2>=0){
+					x1 = x2;
+				}
+				else{
+					x0 = x2;
+				}
+			}
+		break;
+		
+		case 3:
+			cout<<"Función: f(x) = x^3 - 3senx^2  + 1\n\n";
+			cout<<"\n x0: "<<x0<<"\t\tx1: "<<x1<<"\t\tTolerancia: "<<fixed<<setprecision(10)<<tol<<"\tMáximo de iteraciones: "<<maxIt<<endl<<endl;
+			cout<<" i |x_0 \t\t|x_1 \t\t|f(x_0) \t|f(x_1) \t|x_2 \t\t|f(x_2) \t|Ea \t\t|Er \t\t|Erp\n";
+			for(i=0; i<maxIt; i++){
+				fx0 = pow(x0, 3) - 3*sin(pow(x0, 2)) + 1;
+				fx1 = pow(x1, 3) - 3*sin(pow(x1, 2)) + 1;
+				x2 = (x0+x1)/2;
+				fx2 = pow(x2, 3) - 3*sin(pow(x2, 2)) + 1;
+				
+				if(i>0)
+				{
+					ea = fabs(x2-xa);
+					er = ea/(fabs(x2));
+					erp = er*100;
+					iteracion=i;
+					if(tolE==1 && i>0)
+					{
+						if(ea<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else if(tolE==2)
+					{
+						if(er<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else
+					{
+						if(erp<=tol)
+						{
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+				}
+				
+				if(i==0){
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t| \t\t| \t\t|\n", i, x0, x1, fx0, fx1, x2, fx2);					
+				}
+				else{
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf\n", iteracion, x0, x1, fx0, fx1, x2, fx2, ea, er, erp);
+				}
+				xa = x2;
+				if(fx2>=0){
+					x1 = x2;
+				}
+				else{
+					x0 = x2;
+				}
+			}
+		break;
+		
+		case 4:
+			cout<<"Función: f(x) = x^3 + 6x^2 + 9.4x + 2.5\n\n";
+			
+			cout<<"\n x0: "<<x0<<"\t\tx1: "<<x1<<"\t\tTolerancia: "<<fixed<<setprecision(10)<<tol<<"\tMáximo de iteraciones: "<<maxIt<<endl<<endl;
+			
+			cout<<" i |x_0 \t\t|x_1 \t\t|f(x_0) \t|f(x_1) \t|x_2 \t\t|f(x_2) \t|Ea \t\t|Er \t\t|Erp\n";
+			
+			for(i=0; i<=maxIt; i++){
+				fx0 = pow(x0, 3) + 6*pow(x0, 2) + 9.4*x0 + 2.5;
+				fx1 = pow(x1, 3) + 6*pow(x1, 2) + 9.4*x1 + 2.5;
+				x2 = (x0+x1)/2;
+				fx2 = pow(x2, 3) + 6*pow(x2, 2) + 9.4*x2 + 2.5;
+				
+				if(i>0){
+					ea = fabs(x2-xa);
+					er = ea/(fabs(x2));
+					erp = er*100;
+					
+					iteracion=i;
+					
+					if(tolE==1 && i>0){
+						if(ea<=tol){
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else if(tolE==2){
+						if(er<=tol){
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+					else{
+						if(erp<=tol){
+							i=maxIt;
+							encontrada=true;
+						}
+					}
+				}
+				if(i==0){
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t| \t\t| \t\t|\n", i, x0, x1, fx0, fx1, x2, fx2);					
+				}
+				else{
+					printf(" %d |%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \t|%3.9lf \n", iteracion, x0, x1, fx0, fx1, x2, fx2, ea, er, erp);
+				}
+				xa = x2;
+				if(fx2>=0){
+					x1 = x2;
+				}
+				else{
+					x0 = x2;
+				}
+			}
+		break;
+	}
+	
+	if(encontrada==true){
+		cout<<"\n La raíz obtenida es "<<x2<<", en la iteración "<<iteracion<<", con una toleracia de ";
+		if(tolE==1){
+			cout<<fixed<<setprecision(10)<<ea<<" <= "<<tol<<" en el error absoluto.\n";
+		}
+		else if(tolE==2){
+			cout<<fixed<<setprecision(10)<<er<<" <= "<<tol<<" en el error relativo.\n";
+		}
+		else{
+			cout<<fixed<<setprecision(10)<<erp<<" <= "<<tol<<" en el error relativo porcentual.\n";
+		}
+	}
+	else if(iteracion==maxIt && encontrada==false){
+		cout<<"\n Después de "<<maxIt<<" iteraciones como máximo, la raíz con tolerancia de "<<tol;
+		if(tolE==1){
+			cout<<" en el error absoluto, no ha sido encontrada en el intervalo ingresado.\n";
+		}
+		else if(tolE==2){
+			cout<<" en el error relativo, no ha sido encontrada en el intervalo ingresado.\n";
+		}
+		else{
+			cout<<" en el error relarivo porcentual, no ha sido encontrada en el intervalo ingresado.\n";
+		}
+	}
+	
+}
+
+main(){
+	setlocale(LC_CTYPE,"Spanish");
+	int opMet, opFun, opMenu, i, j, k, n, maxIt, tolE,contador=0;
+	double x0, x1, tolerancia, ne, raiz, derivfx0, det, aii=0,suma=0;
+	char resp='S';
+	bool condicion=false;
+	portadaGeneral();
+	do{
+		system("cls");
+		opMenu=1;
+		switch(opMenu){
+			case 1:
+				do{
+					system("cls");
+					opMet=menuMetodo();		
+					do{
+						opFun=menuFuncion();		
+						do{
+							system("cls");
+							if(opMet==2){				
+								cout<<" Ingrese valor inicial: "; 
+								cin>>x0;				
+								derivfx0 = df(x0, opFun);
+								while(derivfx0==0 ||(opFun==2 && x0==0)){		
+									cout<<" **Error**\n Esta funcion no acepta "<<x0<<" como valor inicial\n";
+									cout<<" Ingrese otro valor inicial: "; 
+									cin>>x0;
+									derivfx0 = df(x0, opFun);	
+								}
+							}
+							else{
+								cout<<" Ingrese valores iniciales.\n";
+								cout<<" x0: ";
+								cin>>x0;
+								cout<<" x1: ";
+								cin>>x1;
+								while(x0>=x1 || (opFun==2 && (x0==0 || x1==0))){
+									if(x0>=x1){
+										cout<<" **ERROR**\n Ingrese x0<x1\n";
+										cout<<"\n Ingrese valores iniciales.\n";
+										cout<<" x0: ";
+										cin>>x0;
+										cout<<" x1: ";
+										cin>>x1;	
+									}
+									else if(opFun==2 && (x0==0 || x1==0)){
+										cout<<" **ERROR**\n Esta funcion no acepta valores iguales a 0 (cero)\n";
+										cout<<"\n Ingrese valores iniciales.\n";
+										cout<<" x0: ";
+										cin>>x0;
+										cout<<" x1: ";
+										cin>>x1;
+									}
+								}
+							}
+							cout<<"\n Ingrese El Máximo De Iteraciones: ";
+							cin>>maxIt;
+							cout<<"\n 1.- Error Absoluto \n 2.- Error Relativo \n 3.- Error Relativo Porcentual \n ¿En Que Tipo Error Desea La Tolerancia? ";
+							cin>>tolE;
+							while(tolE!=1 && tolE!=2 && tolE!=3){
+								cout<<" **ERROR**\n Solo Ingrese 1, 2 o 3.\n";
+								cout<<"\n ¿En Que Tipo Error Desea La Tolerancia? ";
+								cin>>tolE;
+							}
+							cout<<"\n Ingrese La Toleracia: ";
+							cin>>tolerancia;
+							system("cls");
+							if(opMet==1){
+								posicionFalsa(opFun, x0, x1, maxIt, tolE, tolerancia, i);
+							}
+							else{
+								metodoNewton(opFun, x0, maxIt, tolE, tolerancia, i);
+							}
+							cout<<"\n\n ¿Qué desea hacer ahora?\n R = Obtener otra raíz.\n F = Ir a menú de funciones.\n M = Ir a menú de métodos. \n P = Volver al menú principal. \n S = Salir.\n";
+							cout<<"\n Respuesta: ";
+							resp=getche();
+							system("cls");
+						}while(resp=='R' || resp=='r');
+					}while(resp=='F' || resp=='f');
+				}while(resp=='M' || resp=='m');
+			break;
+		}
+	}while(resp=='P' || resp=='p');
+}
